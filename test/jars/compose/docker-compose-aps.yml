@@ -1,0 +1,35 @@
+version: '3'
+services:
+  aps-plan:
+    image: imcloud/aps-plan
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  aps-order:
+    image: imcloud/aps-order
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  aps-technology:
+    image: imcloud/aps-technology
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  aps-workorder:
+    image: imcloud/aps-workorder
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+networks:
+  springcloud-overlay:
+    external:
+      name: springcloud-overlay

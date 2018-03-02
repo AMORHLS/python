@@ -1,0 +1,54 @@
+version: '3'
+services:
+  wms-management:
+    image: imcloud/wms-management
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  wms-materials:
+    image: imcloud/wms-materials
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  wms-outbound:
+    image: imcloud/wms-outbound
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  wms-stock:
+    image: imcloud/wms-stock
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  wms-warehousing:
+    image: imcloud/wms-warehousing
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  wms-statistics:
+    image: imcloud/wms-statistics
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+networks:
+  springcloud-overlay:
+    external:
+      name: springcloud-overlay

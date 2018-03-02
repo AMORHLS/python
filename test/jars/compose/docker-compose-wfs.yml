@@ -1,0 +1,22 @@
+version: '3'
+services:
+  wfs-common:
+    image: imcloud/wfs-common
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  wf-special:
+    image: imcloud/wf-special
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+networks:
+  springcloud-overlay:
+    external:
+      name: springcloud-overlay

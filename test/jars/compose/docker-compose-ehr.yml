@@ -1,0 +1,28 @@
+version: '3'
+services:
+  ehr-profile:
+    image: imcloud/ehr-profile
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  ehr-signin:
+    image: imcloud/ehr-signin
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  ehr-attendance:
+     image: imcloud/ehr-attendance
+     networks:
+       - springcloud-overlay
+     environment:
+       - EUREKA_SERVER_ADDRESS=core-eureka
+       - DB_INSTANCE=db-mysql
+networks:
+  springcloud-overlay:
+    external:
+      name: springcloud-overlay

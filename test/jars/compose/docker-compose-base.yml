@@ -1,0 +1,26 @@
+version: '3'
+services:
+  core-apigateway:
+    image: imcloud/core-apigateway
+    networks:
+      - springcloud-overlay
+    ports:
+      - "9001:9001"
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  base-push:
+    image: imcloud/base-push
+    networks:
+      - springcloud-overlay
+    ports:
+      - "9008:9008"
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+networks:
+  springcloud-overlay:
+    external:
+      name: springcloud-overlay

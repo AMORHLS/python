@@ -1,0 +1,31 @@
+version: '3'
+services:
+  service-crm:
+    image: imcloud/service-crm
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  work-calendar:
+    image: imcloud/work-calendar
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  service-conference:
+    image: imcloud/service-conference
+    networks:
+      - springcloud-overlay
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+
+networks:
+  springcloud-overlay:
+    external:
+      name: springcloud-overlay

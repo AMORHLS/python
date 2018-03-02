@@ -1,0 +1,93 @@
+
+Linux安装docker，docker-compose， nginx
+Docker： Docker是一个开源的容器引擎，它有助于更快的交付应用。Docker可将应用程序和基础设施层隔离，并且能将基础设施当作程序一样进行管理。使用Docker，可更快地打包，测试以及部署应用程序，并可以缩短从编写到部署运行代码的周期。
+Docker-compose： 是一个用于定义和运行多容器Docker应用程序的工具。在微服务架构中，应用系统一般包含若干个微服务，每个微服务可能会部署多个实例。如果每个微服务都要手动启停，那么会造成很大的维护成本，效率也很低。使用docker-compose进行镜像的编排，高效的管理容器。
+nginx：前端web项目的宿主服务器，最突出的优点是高性能，负载均衡，反向代理。
+linux 配置远程
+1. 先保证是root超级用户，如果不是，使用下面的命令切换到root
+su -root
+输入密码
+2. vim /etc/sysconfig/network-scripts/ifcfg-ens192      （注意ens192为linux网卡，视具体环境而定，网卡名可通过ifconfig查询）
+修改onboot为yes
+3. 重启网络systemctl restart network
+安装Docker
+1. 安装yum-utils, 这样就能使用yum-config-manager工具设置yum源
+yum install -y yum-utils
+2. 添加docker的yum源
+yum-config-manager \
+--add-repo \
+https://download.docker.com/linux/centos/docker-ce.repo
+3. 安装docker-ce
+yum install docker-ce
+4. 验证docker信息
+docker --version
+5. 配置docker镜像加速器，由于国内网络限制，dockerhub上面的镜像经常会有拉取失败的问题。 我们使用的是DaoCloud加速器，也可以使用阿里云加速器
+进入DaoCloud官网，注册帐号，即可在控制台找到加速器配置，复制执行即可
+
+
+
+6. 启动docker
+systemctl start docker
+安装Docker-compose
+1. 安装docker-compose， 执行下面的命令，可通过https://docs.docker.com/compose/install/#install-compose， 找到docker-compose linux安装方法。
+sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+2. 添加目录权限
+sudo chmod +x /usr/local/bin/docker-compose
+3. 验证docker-compose安装是否成功
+docker-compose --version
+安装nginx
+1.. 准备环境， pcre， zlib， openssl， nginx， 安装包在 \\192.168.20.30\temp folder$\平台开发部\IDE\yangle\nginx for linux
+
+
+2. 安装make
+yum -y install gcc automake autoconf libtool make
+3. 安装g++
+yum install gcc gcc-c++
+3. 选定源码目录，一般是选择在/usr/local/src
+cd /usr/local/src
+4. 安装pcre库
+tar -zxvf pcre-8.41.tar.gz
+cd pcre-8.41
+./configure
+make
+make install
+
+
+5. 安装zlib库
+tar -zxvf zlib-1.2.11.tar.gz
+cd zlib-1.2.11
+./configure
+make
+make install
+
+
+6. 安装ssl
+tar -zxvf openssl-1.0.1t.tar.gz
+
+
+7. 安装nginx
+tar -zxvf nginx-1.9.9.tar.gz
+cd nginx-1.9.9
+
+./configure
+
+make
+
+make install
+
+
+8. nginx默认以80端口启动，如果被占用，需修改
+vim /usr/local/nginx/conf/nginx.conf
+
+9. 启动nginx
+进入nginx主目录
+cd /usr/local/nginx
+启动nginx
+./sbin/nginx
+
+10. 重启nginx
+进入nginx主目录
+cd /usr/local/nginx
+重启nginx
+./sbin/nginx -s reload
+

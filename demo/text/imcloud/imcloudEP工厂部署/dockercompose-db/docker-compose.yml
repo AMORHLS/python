@@ -1,0 +1,37 @@
+version: '3'
+services:
+  db-mysql:
+    image: mysql    #lkjlkfaj
+    volumes:
+      - /opt/mysql/data:/var/lib/mysql
+      - /opt/mysql/conf:/etc/mysql/conf.d
+      - /etc/localtime:/etc/localtime
+    environment:
+      - MYSQL_ROOT_PASSWORD=Hello!!!123
+    ports:
+      - "3306:3306"
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+
+  cache-redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - /opt/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - /opt/redis/data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  imcloudep-rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=root
+    volumes:
+      - /opt/rabbitmq:/var/lib/rabbitmq
+    ports:
+      - "15672:15672"
+    
+networks:
+  default:
+    external:
+      name: imcloudep-external

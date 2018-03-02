@@ -1,0 +1,428 @@
+Docker使用教程
+1. 安装DockerToolbox-17.10.0-ce.exe， 执行默认安装即可，不要修改安装目录，如已安装git，则安装该工具时不要勾选git
+2. 安装完成后，桌面上会生成3个应用，Docker Quickstart Terminal,  Kitematic, Oracle VM VirtualBox
+	Docker Quickstart Terminal: docker操作命令行，类似shell窗口，
+	第一次运行会进行虚拟机安装，配置网络；
+	第二次打开出现docker的图标且没有错误提示，则
+表明docker安装虚拟机成功。默认的虚拟机会显示   default machine with IP 192.168.99.100
+
+Kitematic: docker容器查看窗口
+Oracle VM VirtualBox： 虚拟机窗口
+
+额外的命令：-----
+	将系统时间日期设定指定值   date -s "2018-01-22 17:17:17"
+	将当前时间和日期写入BIOS，避免重启后失效  hwclock -w
+	查看当前时间  date
+	查看本月月历  cal
+
+3. docker的一些操作指令
+查看版本： docker --version
+
+
+4、镜像加速
+aliyun镜像加速获取地址：https://cr.console.aliyun.com/#/accelerator
+
+docker-machine ssh default
+
+5.挂载文件
+mount    可以看到docker_study在虚拟机内的路径
+
+挂载本地目录
+docker pull registry
+docker run -d -p 5000:5000 -v /opt/data/registry:/tmp/registry registry
+
+docker run --name=mysql -d -p3306:3306 -v /data/mysql/data:/var/lib/mysql mysql:5.6
+6、Dockerfile文件
+#VERSION 1.0.0
+
+
+#基于哪个镜像
+FROM
+FROM java:8
+VOLUME /tmp
+ADD core-eureka.jar core-eureka.jar
+RUN bash -c 'touch /core-eureka.jar'
+EXPOSE 9000
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/core-eureka.jar"]
+
+
+7、构建镜像(注意后面的‘.’=当前目录)
+docker build -t 标签/文件的相对路径 .(server/containers)
+eg:docker build -t ubuntu/containers/eureka-server:1 .
+8、启动镜像
+docker run -p 9000:9000 server/containers:latest
+
+<!-- 删除镜像：       docker rmi $(docker images -q)  -->  docker rmi <image id>
+
+docker-compose up -d所有的服务将使用后台模式被启动
+docker-compose.yml
+例如：
+version: '2'
+services:
+    web:
+      image: wordpress:latest
+      links:
+        - db
+      ports:
+        - "8002:80"
+      environment:
+        WORDPRESS_DB_HOST: db:3306
+        WORDPRESS_DB_PASSWORD: 123456
+    db:
+      image: mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=123456
+
+
+
+# 查看运行中的容器
+docker ps
+
+# 查看所有容器
+docker ps -a
+
+# 退出容器
+按Ctrl+D 即可退出当前容器【但退出后会停止容器】
+
+# 退出不停止容器：
+组合键：Ctrl+P+Q
+
+# 启动容器
+docker start 容器名或ID
+
+# 进入容器
+docker attach 容器名或ID
+
+# 停止容器
+docker start 容器名或ID
+
+# 删除全部容器--慎用
+docker stop $(docker ps -q) & docker rm $(docker ps -aq)
+
+#保存容器，生成镜像
+docker commit 容器ID 镜像名称
+
+
+docker run -d -p 5000:5000 --restart=always --name registry --privileged=true -v /data/:/var/lib/registry registry:2.4.1
+docker run -d -p 5000:5000 -v /data/registry:/var/lib/registry --name registry --restart=always registry
+docker通过http访问 （镜像同理{"registry-mirror":["http://019a7061.m.daocloud.io"]}）
+			–registry-mirror=http://hub-mirror.c.163.com
+			-registry-mirror=https://lbcmsrsd.mirror.aliyuncs.com
+	第一种方案：
+	vim /usr/lib/systemd/system/docker.service
+	ExecStart=/usr/bin/dockerd   --insecure-registry 172.17.0.2:5000(容器ip和端口)
+	ExecStart=/usr/bin/dockerd --insecure-registry 192.168.77.130:5000
+ 	第二种方案：
+	vim /etc/docker/daemon.json  新增一下内容
+	{ "insecure-registries":["192.168.77.130:5000"]}
+
+查看网络
+docker network ls
+进入容器
+docker attach 镜像id/镜像名
+
+lsof -i:5000
+查看端口监听状态
+ss -anlp | grep :5000
+netstat -anlp | grep :5000
+查看docker
+rpm -qa | grep docker
+从yum上下载docker-ce
+yum -y install docker-ce
+重新加载
+systemctl daemon-reload
+重启docker服务
+systemctl restart docker.service
+
+2. docker多主机部署，（技术方案： etcd，k8s， flannel， swarm）
+
+
+
+docker使用总结------------------------------------------------------------------------
+
+1、移除非官方软件包
+sudo yum -y remove docker
+2、设置yum源
+sudo yum install -y yum-utils
+sudo yum-config-manager \
+     --add-repo \
+     https://docs.docker.com/engine/installation/linux/repo_files/centos/docker.repo
+3、安装docker
+sudo yum makecache fast
+sudo yum -y install docker-engine
+4、启动docker
+sudo systemctl start docker
+5、验证安装是否正确
+sudo docker run hello-world
+6、查看docker版本
+docker version
+7、卸载docker
+sudo yum -y remove docker-engine
+sudo rm -rf /var/lib/docker
+8、配置镜像加速
+vim /etc/docker/daemon.json
+
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+	"registry-mirrors":{"https://362p0mbf.mirror.aliyuncs.com"}
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+9、删除镜像
+docker rmi 镜像名称/id
+  删除所有镜像
+docker rmi -f ${docker images}   --   -f 表示强制删除
+10、新建并启动容器
+docker run java /bin/echo 'Hello World'  终端打印 Hello World
+docker run -d -p 91:80 nginx   (-d 后台运行  -p宿主机端口：容器端口  #开放容器端口到宿主机端口)
+11、进入容器
+docker attach 容器id   或者使用nsenter工具
+docker inspect --format "{{.State.Pid}}" $CONTAINER_ID  获取pid
+nsenter --target "$PID" --mount -uts --ipc --net --pid   使用nsenter工具进入容器
+  删除指定容器 docker rm 容器id（+ -f删除正在运行的）
+  删除所有的容器 docker rm -f $(docker ps -a -q)
+11、使用registry搭建私有docker仓库
+docker run -d -p 5000:5000  --restart=always --name registry2 registry:2
+docker run -d -p 5000:5000 -v /data/registry:/var/lib/registry --name registry --restart=always registry
+docker通过http访问
+vim /usr/lib/systemd/system/docker.service
+ExecStart=/usr/bin/dockerd   --insecure-registry 172.17.0.2:5000(容器ip和端口)   ????
+ExecStart=/usr/bin/dockerd --insecure-registry 192.168.77.131:5000              ???                                        查找仓库             find / -name registry
+查看registry镜像信息
+curl http://<ip>:5000/v2/_catalog
+返回：例如  {"repositories":["centos6.8","jenkins1.638","nginx","redis3.0","source2.0.3","zkdubbo"]}
+     备注：
+	1>、列出当前所有镜像 	curl http://192.168.77.130:5000/v2/_catalog
+	2>、列出当前指定镜像	curl http://192.168.77.130:5000/v2/_catalog?n=100
+	3>、搜索镜像		curl http://192.168.77.130:5000/v2/wordpress/tags/list
+	4>、确认registry是否正常工作	curl http://192.168.77.130:5000/v2/
+
+12、使用Dockerfile构建镜像
+mvn clean package 将项目打成jar包
+touch Dockerfile 创建Dockerfile文件
+	#VERSION 1.0.0
+
+
+	#基于哪个镜像
+
+	FROM java:8
+
+
+	#创建者
+
+	MAINTAINER hlsamor "hlsamor@163.com"
+
+
+	#将本地文件夹挂载到当前容器
+    VOLUME /tmp
+
+
+	#拷贝文件到容器，也可以直接写成 ADD eureka-server-0.0.1-SNAPSHOT.jar /app.jar
+
+	ADD eureka-server-0.0.1-SNAPSHOT.jar  app.jar
+
+	RUN bash -c 'touch /app.jar'
+
+
+	#开放端口号
+
+	EXPOSE 9000
+	# 配置容器启动后执行的命令
+
+	ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+docker build -t registry/eureka-server:0.0.1 .  #格式 ： docker build -t 仓库名称/镜像名称（：标签） . 文件的相对位置
+docker run -d -p 9000:9000 registry/eureka-server:0.0.1       然后访问宿主机ip:9000/
+13、push镜像到私有仓库
+push前修改镜像标签
+docker tag registry/eureka-server:0.0.1 localhost:5000/registry/eureka-server:0.0.1
+docker push  localhost:5000/registry/eureka-server:0.0.1
+14、使用maven插件构建docker镜像
+pom中加入
+<plugin>
+  <groupId>com.spotify</groupId>
+  <artifactId>docker-maven-plugin</artifactId>
+  <version>0.4.13</version>
+  <configuration>
+	<imageName>IMCloud/core-eureka:0.0.1<imageName>
+	<baseImage>java</baseImage>
+	<entryPoint>["java","-jar","/${project.build.finalName}.jar"]</entryPoint>
+	<resources>
+	  <resource>
+		<targetPath>/</targetPaht>
+		<directory>${project.build.directory}</directory>
+		<include>${project.build.finalName}.jar</include>
+	  </resource>
+	</resources>
+  </configuration>
+</plugin>
+	mvn clean package docker:build  执行该命令 构建Docker镜像
+插件读取Dockerfile进行构建
+在src/main/docker目录下，新建Dockerfile  修改pom.xml
+<plugin>
+  <groupId>com.spotify</groupId>
+  <artifactId>docker-maven-plugin</artifactId>
+  <version>0.4.13</version>
+  <configuration>
+	<imageName>IMCloud/core-eureka:0.0.2<imageName>
+	<dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
+	<resources>
+	  <resource>
+		<targetPath>/</targetPaht>
+		<directory>${project.build.directory}</directory>
+		<include>${project.build.finalName}.jar</include>
+	  </resource>
+	</resources>
+  </configuration>
+</plugin>
+将插件绑定在某个phase执行
+<plugin>
+  <groupId>com.spotify</groupId>
+  <artifactId>docker-maven-plugin</artifactId>
+  <version>0.4.13</version>
+  <executions>
+  	<execution>
+		<id>build-image</id>
+		<phase>package</phase>
+		<goals>
+		   <goal>build</goal>
+		</goals>
+	</execution>
+  </executions>
+  <configuration>
+	<imageName>IMCloud/core-eureka:0.0.1<imageName>
+	<baseImage>java</baseImage>
+	<entryPoint>["java","-jar","/${project.build.finalName}.jar"]</entryPoint>
+	<resources>
+	  <resource>
+		<targetPath>/</targetPaht>
+		<directory>${project.build.directory}</directory>
+		<include>${project.build.finalName}.jar</include>
+	  </resource>
+	</resources>
+  </configuration>
+</plugin>
+此时只需要执行mvn package  就会自动执行mvn docker:build
+15、使用maven插件push镜像到Docker Hub
+	修改maven全局的配置文件settings.xml
+	<server>
+		<id>docker-hun</id>
+		<username> DockerHub用户名</username>
+		<password> DockerHub密码 </password>
+		<configuration> <email>DockerHub邮箱 </email>  </configuration>
+	</server>
+修改pom.xml
+<plugin>
+  <groupId>com.spotify</groupId>
+  <artifactId>docker-maven-plugin</artifactId>
+  <version>0.4.13</version>
+  <configuration>
+	<imageName>IMCloud/core-eureka:0.0.1<imageName>
+	<baseImage>java</baseImage>
+	<entryPoint>["java","-jar","/${project.build.finalName}.jar"]</entryPoint>
+	<resources>
+	  <resource>
+		<targetPath>/</targetPaht>
+		<directory>${project.build.directory}</directory>
+		<include>${project.build.finalName}.jar</include>
+	  </resource>
+	</resources>
+	<serverId>docker-hub</serverId>   与maven配置文件中配置的server.id一致，用于推送镜像
+  </configuration>
+</plugin>
+    然后执行mvn clean package docker:build -DpushImage
+    推送到私有仓库 <imageName>localhost:5000/IMCloud/eureka-server:0.0.2</imageName>
+	当然也可以借助imageTags更为灵活的指定镜像名称和标签
+	<configuration>
+		<imageName>IMCloud/eureka-server</imageName>
+		<imageTags>
+			<imageTag>0.0.5</imageTag>
+			<imageTag>latest</imageTag>
+		</imageTags>
+	  ...
+	</configuration>                                                                                                      	或者在执行构建命令时，使用dockerImageTags参数指定标签名称 eg:
+		mvn clean package docker:build -DpushImageTags -DdockerImageTags=latest -DdockerImageTags=another-tag
+	注意：如果需要构建相同名称的镜像，将forceTags设置为true 在<configutation>内增加<forceTags>true</..>                                                                                                                                      16、使用Docker Compose编排微服务
+  安装Compose  (shell方式)
+	curl -L "https://github.com/docker/compose/release/download/1.10.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  安装脚本添加执行权限
+	chmod +x /usr/local/bin/docker-compose
+  测试是否安装成功 ： docker-compose --version
+	在bash下安装compose命令补全工具  (需要重新登录)
+	curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose version--short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose                                          在jar包所在路径下创建docker-compose.yml
+version: '2'
+    format
+services:
+    eureka:     #指定服务名称
+      build:	#指定Dockerfile所在路径
+      ports:
+	- "9000:9000"  #端口映射
+使用docker-compose up命令 （+  -d后台启动并运行这些容器）
+
+实战------------------------------------------------------------
+   使用docker-maven插件
+<plugin>
+  <groupId>com.spotify</groupId>
+  <artifactId>docker-maven-plugin</artifactId>
+  <version>0.4.13</version>
+  <configuration>
+	<imageName>IMCloud/${project.artifactId}:${project.version}<imageName>
+	<forceTags>true</forceTags>
+	<baseImage>java</baseImage>
+	<entryPoint>["java","-jar","/${project.build.finalName}.jar"]</entryPoint>
+	<resources>
+	  <resource>
+		<targetPath>/</targetPaht>
+		<directory>${project.build.directory}</directory>
+		<include>${project.build.finalName}.jar</include>
+	  </resource>
+	</resources>
+  </configuration>
+</plugin>
+  更改微服务配置
+eureka:
+  client:
+      serviceUrl:
+	 defaultZone:http://discovery:9000/eureka/
+在每个项目的根目录下执行命令 ： mvn clean package docker:build
+编写docker-compose.yml
+version: '2'
+services:
+  core-eureka:
+     images: IMCloud/core-eureka:0.0.1-SHAPSHOT
+     ports:
+  	- "9000:9000"
+     links:
+	- core-eureka:discovery
+
+<plugin>
+	<groupId>com.spotify</groupId>
+	<artifactId>docker-maven-plugin</artifactId>
+	<version>0.4.13</version>
+	<configuration>
+		<imageName>cewaydocker2017/${project.artifactId}</imageName>
+		<!-- <baseImage>java</baseImage> -->
+		<!-- <entryPoint>["java","-jar","/${project.build.finalName}.jar"]</entryPoint> -->
+		<dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
+		 <!--解决Connect to localhost:2375的问题的其中一种方式，注意要跟docker-machine env相一致 -->
+		<dockerHost>https://192.168.99.100:2376</dockerHost>
+		<dockerCertPath>C:\Users\CW5320\.docker\machine\machines\default</dockerCertPath>
+		<resources>
+		<resource>
+			<targetPath>/</targetPath>
+			<directory>${project.build.directory}</directory>
+			<include>${project.build.finalName}.jar</include>
+		</resource>
+		</resources>
+	</configuration>
+</plugin>
+
+FROM java:8
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+VOLUME /tmp
+ADD ehr-attendance.jar ehr-attendance.jar
+RUN bash -c 'touch /ehr-attendance.jar'
+EXPOSE 9052
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/ehr-attendance.jar"]

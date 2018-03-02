@@ -1,0 +1,15 @@
+TYPE=VIEW
+query=select date_format(curdate(),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 1 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 2 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 3 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 4 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 5 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 6 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 7 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 8 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 9 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 10 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 11 month),\'%Y-%m\') AS `month`
+md5=45d9b37553d5ae01cc8a88b57b30af8a
+updatable=0
+algorithm=0
+definer_user=root
+definer_host=%
+suid=1
+with_check_option=0
+timestamp=2018-02-09 13:34:27
+create-version=1
+source=select date_format(curdate(),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 1 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 2 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 3 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 4 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 5 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 6 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 7 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 8 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 9 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 10 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 11 month),\'%Y-%m\') AS `month`
+client_cs_name=utf8
+connection_cl_name=utf8_general_ci
+view_body_utf8=select date_format(curdate(),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 1 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 2 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 3 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 4 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 5 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 6 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 7 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 8 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 9 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 10 month),\'%Y-%m\') AS `month` union select date_format((curdate() - interval 11 month),\'%Y-%m\') AS `month`

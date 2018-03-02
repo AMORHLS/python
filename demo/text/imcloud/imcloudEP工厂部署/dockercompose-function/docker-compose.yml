@@ -1,0 +1,132 @@
+version: '3'
+services:
+  core-apigateway:
+    image: imcloud/core-apigateway
+    ports:
+      - "9001:9001"
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  base-push:
+    image: imcloud/base-push
+    ports:
+      - "9008:9008"
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+
+  ehr-profile:
+    image: imcloud/ehr-profile
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  ehr-signin:
+    image: imcloud/ehr-signin
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  mms-materialsweb:
+    image: imcloud/mms-materialsweb
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  platform-rights:
+    image: imcloud/platform-rights
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  pms-purchase:
+    image: imcloud/pms-purchase
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  pms-supplier:
+    image: imcloud/pms-supplier
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  pms-app:
+    image: imcloud/pms-app
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  aps-plan:
+    image: imcloud/aps-plan
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  aps-order:
+    image: imcloud/aps-order
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  aps-technology:
+    image: imcloud/aps-technology
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  aps-workorder:
+    image: imcloud/aps-workorder
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  wfs-common:
+    image: imcloud/wfs-common
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  wf-special:
+    image: imcloud/wf-special
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  wms-management:
+    image: imcloud/wms-management
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  wms-materials:
+    image: imcloud/wms-materials
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  wms-outbound:
+    image: imcloud/wms-outbound
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  wms-stock:
+    image: imcloud/wms-stock
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  wms-warehousing:
+    image: imcloud/wms-warehousing
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  wms-statistics:
+    image: imcloud/wms-statistics
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+  service-crm:
+    image: imcloud/service-crm
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+  work-calendar:
+    image: imcloud/work-calendar
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+      - DB_INSTANCE=db-mysql
+
+networks:
+  default:
+    external:
+      name: imcloudep-external

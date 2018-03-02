@@ -1,0 +1,17 @@
+version: '3'
+services:
+  core-eureka:
+    image: imcloud/core-eureka
+    ports:
+      - "9000:9000"
+  core-config:
+    image: imcloud/core-config
+    ports:
+      - "9999:9999"
+    environment:
+      - EUREKA_SERVER_ADDRESS=core-eureka
+
+networks:
+  default:
+    external:
+      name: imcloudep-external
